@@ -1,0 +1,16 @@
+.marker {
+/*    animation-duration: 1s;
+    animation-iteration-count: infinite;
+    animation-name: ani-spin-bounce;
+    transform-origin: center center;*/
+}
+
+
+@keyframes ani-spin-bounce {
+    from {
+      transform:scale(0);
+    }
+    to {
+      transform:scale(1);
+    }
+}
