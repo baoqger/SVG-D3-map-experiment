@@ -85,18 +85,33 @@ class WorldMap extends Component {
         <g className="markers">
           {
             this.state.cities.map((city, i) => (
-              <circle
-                key={ `marker-${i}` }
-                cx={ this.projection()(city.coordinates)[0] }
-                cy={ this.projection()(city.coordinates)[1] }
-                r={ city.population / 3000000 }
-                fill="#E91E63"
-                stroke="#FFFFFF"
-                className="marker"
-                onClick={ () => this.handleMarkerClick(i) }
-                >
-                <animate attributeName="r" begin="0s" dur="1s" repeatCount="indefinite" from="0" to={ city.population / 3000000 }/>
-              </circle>
+              <g key={ `marker-group-${i}` }>
+                <circle
+                  key={ `marker-radar-${i}` }
+                  cx={ this.projection()(city.coordinates)[0] }
+                  cy={ this.projection()(city.coordinates)[1] }
+                  r={ 2 * city.population / 3000000 }
+                  fill="aqua"
+                  stroke="#FFFFFF"
+                  className="marker-radar"
+                  opacity="0.3"
+                  >
+                  <animate attributeName="r" begin="0s" dur="1s" repeatCount="indefinite" from="0" to={ 2 * city.population / 3000000 }/>
+                </circle>
+
+                <circle
+                  key={ `marker-${i}` }
+                  cx={ this.projection()(city.coordinates)[0] }
+                  cy={ this.projection()(city.coordinates)[1] }
+                  r={ city.population / 3000000 }
+                  fill="aqua"
+                  stroke="#FFFFFF"
+                  className="marker"
+                  opacity="0.8"
+                  onClick={ () => this.handleMarkerClick(i) }
+                  >
+                  </circle>
+                </g>
             ))
           }
         </g>
