@@ -43,6 +43,7 @@ class WorldMap extends Component {
         { name: "Paris",          coordinates: [2.3522,48.8566],    population: 10858000 },
         { name: "Lima",           coordinates: [-77.0428,-12.0464], population: 10750000 },
       ],
+      arcs: [],
     }
 
     this.handleCountryClick = this.handleCountryClick.bind(this)
@@ -64,13 +65,41 @@ class WorldMap extends Component {
     this.setState({
       worlddata: feature(worlddata, worlddata.objects.countries).features,
     }, () => {
-      console.log('111', this.state.worlddata.length);
+      console.log('111', this.state.worlddata);
     })
   }
-  handleItemClick(name) {
-    console.log(333,name);
+  handleItemClick(name,index) {
+    console.log(333,name,index);
+    const sourceCity = this.state.cities[index]['coordinates'];
+    const arcList = [];
+    this.state.cities.forEach((each) => {
+      if (each.name === name) {
+        return;
+      } else {
+        const targetCity = each.coordinates;
+        const sourceXY = this.projection()(sourceCity);
+        const targetXY = this.projection()(targetCity);
+        const sourceX = sourceXY[0],
+              sourceY = sourceXY[1];
+        const targetX = targetXY[0],
+              targetY = targetXY[1];
+        const dx = targetX - sourceX,
+              dy = targetY - sourceY,
+              dr = Math.sqrt(dx*dx + dy*dy);
+        const west_of_source = (targetX - sourceX) < 0;
+        let arc;
+        if (west_of_source) {
+          arc = "M" + targetX + "," + targetY + " A" + dr + "," + dr + " 0 0,1 " + sourceX + "," + sourceY;
+        } else {
+          arc = "M" + sourceX + "," + sourceY + " A" + dr + "," + dr + " 0 0,1 " + targetX + "," + targetY;
+        }
+        arcList.push(arc);
+      }
+    });
+    console.log(arcList);
     this.setState({
-      selectedCity: name
+      selectedCity: name,
+      arcs: arcList,
     });
   }
   renderList() {
@@ -81,8 +110,8 @@ class WorldMap extends Component {
           size="small"
           bordered
           dataSource={cities}
-          renderItem={item => (
-            <List.Item onClick= {() => this.handleItemClick(item.name)}>{item.name}</List.Item>
+          renderItem={(item, index) => (
+            <List.Item onClick= {() => this.handleItemClick(item.name, index)}>{item.name}</List.Item>
           )}
         />
       </div>
@@ -141,6 +170,20 @@ class WorldMap extends Component {
                     >
                     </circle>
                   </g>
+              ))
+            }
+          </g>
+          <g className="arcs">
+            {
+              this.state.arcs.map((d,i) => (
+                <path
+                  key={ `arc-${ i }` }
+                  d={ d }
+                  className="arc"
+                  stroke="#00ffff"
+                  fill="none"
+                  strokeWidth={ 0.5 }
+                />
               ))
             }
           </g>
