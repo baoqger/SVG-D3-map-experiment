@@ -1,16 +1,11 @@
-.marker {
-/*    animation-duration: 1s;
-    animation-iteration-count: infinite;
-    animation-name: ani-spin-bounce;
-    transform-origin: center center;*/
+.map-container {
+  position: relative;
 }
 
-
-@keyframes ani-spin-bounce {
-    from {
-      transform:scale(0);
-    }
-    to {
-      transform:scale(1);
-    }
+.map-list {
+  position: absolute;
+  left: 0;
+  width: 200px;
+  height: 450px;
+  overflow-y: scroll;
 }

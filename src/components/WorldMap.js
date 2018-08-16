@@ -3,12 +3,14 @@ import { geoMercator, geoPath } from "d3-geo"
 import { feature } from "topojson-client"
 import worlddata from './world-110m.json';
 import './WorldMap.css';
+import { List } from 'antd';
 
 class WorldMap extends Component {
   constructor() {
     super()
     this.state = {
       worlddata: [],
+      selectedCity: '',
       cities: [
         { name: "Tokyo",          coordinates: [139.6917,35.6895],  population: 37843000 },
         { name: "Jakarta",        coordinates: [106.8650,-6.1751],  population: 30539000 },
@@ -45,6 +47,7 @@ class WorldMap extends Component {
 
     this.handleCountryClick = this.handleCountryClick.bind(this)
     this.handleMarkerClick = this.handleMarkerClick.bind(this)
+    this.handleItemClick = this.handleItemClick.bind(this);
   }
   projection() {
     return geoMercator()
@@ -64,58 +67,85 @@ class WorldMap extends Component {
       console.log('111', this.state.worlddata.length);
     })
   }
+  handleItemClick(name) {
+    console.log(333,name);
+    this.setState({
+      selectedCity: name
+    });
+  }
+  renderList() {
+    const cities = this.state.cities;
+    return (
+      <div className="map-list">
+        <List
+          size="small"
+          bordered
+          dataSource={cities}
+          renderItem={item => (
+            <List.Item onClick= {() => this.handleItemClick(item.name)}>{item.name}</List.Item>
+          )}
+        />
+      </div>
+    );
+  }
+  getFillColor(city) {
+    return city.name === this.state.selectedCity ? '#66ff66' : 'aqua';
+  }
   render() {
     return (
-      <svg width={ 800 } height={ 450 } viewBox="0 0 800 450">
-        <g className="countries">
-          {
-            this.state.worlddata.map((d,i) => (
-              <path
-                key={ `path-${ i }` }
-                d={ geoPath().projection(this.projection())(d) }
-                className="country"
-                fill={ `rgba(38,50,56,${ 1 / this.state.worlddata.length * i})` }
-                stroke="#FFFFFF"
-                strokeWidth={ 0.5 }
-                onClick={ () => this.handleCountryClick(i) }
-              />
-            ))
-          }
-        </g>
-        <g className="markers">
-          {
-            this.state.cities.map((city, i) => (
-              <g key={ `marker-group-${i}` }>
-                <circle
-                  key={ `marker-radar-${i}` }
-                  cx={ this.projection()(city.coordinates)[0] }
-                  cy={ this.projection()(city.coordinates)[1] }
-                  r={ 2 * city.population / 3000000 }
-                  fill="aqua"
+      <div className="map-container">
+        {this.renderList()}
+        <svg width={ 800 } height={ 450 } viewBox="0 0 800 450">
+          <g className="countries">
+            {
+              this.state.worlddata.map((d,i) => (
+                <path
+                  key={ `path-${ i }` }
+                  d={ geoPath().projection(this.projection())(d) }
+                  className="country"
+                  fill={ `rgba(38,50,56,${ 1 / this.state.worlddata.length * i})` }
                   stroke="#FFFFFF"
-                  className="marker-radar"
-                  opacity="0.3"
-                  >
-                  <animate attributeName="r" begin="0s" dur="1s" repeatCount="indefinite" from="0" to={ 2 * city.population / 3000000 }/>
-                </circle>
-
-                <circle
-                  key={ `marker-${i}` }
-                  cx={ this.projection()(city.coordinates)[0] }
-                  cy={ this.projection()(city.coordinates)[1] }
-                  r={ city.population / 3000000 }
-                  fill="aqua"
-                  stroke="#FFFFFF"
-                  className="marker"
-                  opacity="0.8"
-                  onClick={ () => this.handleMarkerClick(i) }
-                  >
+                  strokeWidth={ 0.5 }
+                  onClick={ () => this.handleCountryClick(i) }
+                />
+              ))
+            }
+          </g>
+          <g className="markers">
+            {
+              this.state.cities.map((city, i) => (
+                <g key={ `marker-group-${i}` }>
+                  <circle
+                    key={ `marker-radar-${i}` }
+                    cx={ this.projection()(city.coordinates)[0] }
+                    cy={ this.projection()(city.coordinates)[1] }
+                    r={ 2 * city.population / 3000000 }
+                    fill={this.getFillColor(city)}
+                    stroke="#FFFFFF"
+                    className="marker-radar"
+                    opacity="0.3"
+                    >
+                    <animate attributeName="r" begin="0s" dur="1s" repeatCount="indefinite" from="0" to={ 2 * city.population / 3000000 }/>
                   </circle>
-                </g>
-            ))
-          }
-        </g>
-      </svg>
+
+                  <circle
+                    key={ `marker-${i}` }
+                    cx={ this.projection()(city.coordinates)[0] }
+                    cy={ this.projection()(city.coordinates)[1] }
+                    r={ city.population / 3000000 }
+                    fill={ this.getFillColor(city) }
+                    stroke="#FFFFFF"
+                    className="marker"
+                    opacity="0.8"
+                    onClick={ () => this.handleMarkerClick(i) }
+                    >
+                    </circle>
+                  </g>
+              ))
+            }
+          </g>
+        </svg>
+      </div>
     )
   }
 }
