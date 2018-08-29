@@ -154,7 +154,7 @@ class WorldMap extends Component {
                     className="marker-radar"
                     opacity="0.3"
                     >
-                    <animate attributeName="r" begin="0s" dur="1s" repeatCount="indefinite" from="0" to={ 2 * city.population / 3000000 }/>
+                    <animate attributeName="r" begin="0s" dur="3s" repeatCount="indefinite" from="0" to={ 2 * city.population / 3000000 }/>
                   </circle>
 
                   <circle
@@ -182,7 +182,7 @@ class WorldMap extends Component {
                   className="arc"
                   stroke="#00ffff"
                   fill="none"
-                  strokeWidth={ 0.5 }
+                  strokeWidth={ 1 }
                 />
               ))
             }

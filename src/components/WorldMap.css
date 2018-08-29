@@ -9,3 +9,17 @@
   height: 450px;
   overflow-y: scroll;
 }
+
+.arc {
+	stroke-dasharray: 100%;
+	animation: dash 5s linear normal infinite;
+}
+
+@keyframes dash {
+	from {
+		stroke-dashoffset: 0;
+	}
+	to {
+		stroke-dashoffset: 100%;
+	}
+}
